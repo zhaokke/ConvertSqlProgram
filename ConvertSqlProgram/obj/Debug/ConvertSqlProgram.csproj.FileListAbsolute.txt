@@ -1,0 +1,6 @@
+D:\MyDemo\ConvertSql\ConvertSqlProgram\ConvertSqlProgram\bin\Debug\ConvertSqlProgram.exe.config
+D:\MyDemo\ConvertSql\ConvertSqlProgram\ConvertSqlProgram\bin\Debug\ConvertSqlProgram.exe
+D:\MyDemo\ConvertSql\ConvertSqlProgram\ConvertSqlProgram\bin\Debug\ConvertSqlProgram.pdb
+D:\MyDemo\ConvertSql\ConvertSqlProgram\ConvertSqlProgram\obj\Debug\ConvertSqlProgram.csprojResolveAssemblyReference.cache
+D:\MyDemo\ConvertSql\ConvertSqlProgram\ConvertSqlProgram\obj\Debug\ConvertSqlProgram.exe
+D:\MyDemo\ConvertSql\ConvertSqlProgram\ConvertSqlProgram\obj\Debug\ConvertSqlProgram.pdb
