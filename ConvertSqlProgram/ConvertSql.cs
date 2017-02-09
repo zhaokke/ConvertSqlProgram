@@ -53,26 +53,28 @@ namespace ConvertSqlProgram
             RelpaceValue(dic);
             //去掉所有的[]
             sqlStr = Regex.Replace(sqlStr,@"(\[|\])","", RegexOptions.IgnoreCase);
-            //(or 与 (and 替换成 （
+            //(or 与 (and 替换成 （ 
             sqlStr = Regex.Replace(sqlStr, @"\(\s*(or|and)+", "(", RegexOptions.IgnoreCase);
             //where)  替换成 where 
             sqlStr = Regex.Replace(sqlStr, @"where\s*\)", "where", RegexOptions.IgnoreCase);
-            // and 空 and与or 替换为 and
-            sqlStr = Regex.Replace(sqlStr, @"and\s*(and|or)+", "and", RegexOptions.IgnoreCase);
             //where and|or () 替换为 where
             sqlStr = Regex.Replace(sqlStr, @"(where)\s+(and|or)\s*\(\s*\)", "where", RegexOptions.IgnoreCase);
-            //or 空 and与or 替换为 or
-            sqlStr = Regex.Replace(sqlStr, @"or\s*(and|or)+", "or", RegexOptions.IgnoreCase);
             // where or 与 where and 替换成 where 
             sqlStr = Regex.Replace(sqlStr, @"(where)\s*(or|and)+", "where", RegexOptions.IgnoreCase);
-            // and与or()and与or替换为 '' 
-            sqlStr = Regex.Replace(sqlStr, @"(or|and)\s*\(\s*\)\s*(or|and)\s*$", "", RegexOptions.IgnoreCase);
+            // and与or()and  替换为 and
+            sqlStr = Regex.Replace(sqlStr, @"(or|and)\s*\(\s*\)\s*and\s*$", "and", RegexOptions.IgnoreCase);
+            // and与or()and  替换为 or
+            sqlStr = Regex.Replace(sqlStr, @"(or|and)\s*\(\s*\)\s*or\s*$", "or", RegexOptions.IgnoreCase);
             // and()and与or替换为 and 
             sqlStr = Regex.Replace(sqlStr, @"and\s*\(\s*\)\s*(and|or)", "and", RegexOptions.IgnoreCase);
             // or与and与or替换为 or 
             sqlStr = Regex.Replace(sqlStr, @"or\s*\(\s*\)\s*(and|or)", "or", RegexOptions.IgnoreCase);
             // or)与and)与or替换为 or 
             sqlStr = Regex.Replace(sqlStr, @"or\s*\(\s*\)\s*(and|or)", "or", RegexOptions.IgnoreCase);
+            //or与and) 替换为 ）
+            sqlStr = Regex.Replace(sqlStr, @"\s*(and|or)\s*\)", ")", RegexOptions.IgnoreCase);
+            //where ()and与or
+            sqlStr = Regex.Replace(sqlStr, @"where\s*\(\s*\)\s*(and|or)*", "where", RegexOptions.IgnoreCase);
             //最后为 and 或 or替换为 ''
             sqlStr = Regex.Replace(sqlStr, @"(and|or)*(\s|\(\s*\))*$", "", RegexOptions.IgnoreCase);
             // 最后为where替换为''
