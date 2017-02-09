@@ -39,9 +39,9 @@ namespace ConvertSqlProgram
             on si.bill_code = tsc.bill_code
          where ts.type <> '中心'
          and tsc.bill_type='主单'
-         and \\{tsc.scan_site='@tsc.scan_site'\\}
-         and \\{ts.province='@ts.province'\\}
-         and \\{ts.city='@ts.city'\\}
+         and (tsc.scan_site='@tsc.scan_site')
+         and (ts.province='@ts.province')
+         and (ts.city='@ts.city')
          and si.bill_code is not null) t1
          left join tab_problem tp on t1.bill_code=tp.bill_code
          left join tab_bill tb on tb.bill_code=t1.bill_code
