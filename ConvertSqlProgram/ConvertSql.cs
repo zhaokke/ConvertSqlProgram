@@ -35,59 +35,63 @@ namespace ConvertSqlProgram
             //1.将所有转行或空字符转换为空格
             sqlStr = Regex.Replace(sqlStr, @"\s+", " ", RegexOptions.IgnoreCase);
 
-            //2去掉未设定值得参数 {}
-            //通过正则匹配出所有的{}
-            Regex passedReg = new Regex(@"{\S+}", RegexOptions.IgnoreCase);
-            MatchCollection mc = passedReg.Matches(sqlStr);
-            //2.2 迭代正则得到的集合，替换sql内容或删除对应脚本
-            foreach (Match m in mc)
+            //2 将Dic中key值 在sql条件中替换成 [ ]
+            foreach(var itKey in dic.Keys)
             {
-                //{tbd.balance_confirm_money>0}
-                string conditionStr = Convert.ToString(m.Groups[0]);
-                string[] conditionArray = conditionStr.Trim('{').Trim('}').Split(new string[] { ">", ">=", "<", "<=", "like", "not like", "=", "<>" }, StringSplitOptions.None);
-                bool isExistsKey = dic.Keys.Contains(Convert.ToString(conditionArray[0]));
-                if (isExistsKey)
+                string conditionReg = @"(\[|\{)" + itKey + ".+?"+@"(\}|\])";
+                MatchCollection mc = new Regex(conditionReg).Matches(sqlStr);
+                foreach (Match m in mc)
                 {
-                    //取出关键字
-                    string key = new Regex(">|>=|<|<=|like|not like|=|<>", RegexOptions.IgnoreCase).Match(conditionStr).ToString();
-                    //{tbd.balance_confirm_money<0} 替换成 tbd.balance_confirm_money<value
-                    bool isNumber = Regex.IsMatch(dic[conditionArray[0].Trim()], "[0-9]+");
-                    string value = isNumber ? dic[conditionArray[0].Trim()] : string.Format("\'{0}\'", dic[conditionArray[0].Trim()]);
-                    string newConditionStr = conditionArray[0].ToString() + key + value;
-                    //替换对应的条件
-                    sqlStr = Regex.Replace(sqlStr, conditionStr, newConditionStr, RegexOptions.IgnoreCase);
-                }
-                //条件未传时，则将该{tbd.balance_confirm_money>0}去掉
-                else
-                {
-                    sqlStr = Regex.Replace(sqlStr, conditionStr, "", RegexOptions.IgnoreCase);
+                    string conditionStr = Convert.ToString(m.Groups[0]);
+                    conditionStr = conditionStr.Replace("{", "[").Replace("}", "]");
+                    sqlStr = Regex.Replace(sqlStr, conditionReg, conditionStr, RegexOptions.IgnoreCase);
                 }
             }
-
-            //3将必传条件加入到sql，并取出[]
-            MatchCollection mustMc = new Regex(@"\[\S+\]", RegexOptions.IgnoreCase).Matches(sqlStr);
-            foreach (Match m in mustMc)
-            {
-                string mustStr = Convert.ToString(m.Groups[0]);
-                string[] mustArray = mustStr.Trim('[').Trim(']').Split(new string[] { ">", ">=", "<", "<=", "like", "not like", "=", "<>" }, StringSplitOptions.None);
-                string key = new Regex(">|>=|<|<=|like|not like|=|<>", RegexOptions.IgnoreCase).Match(mustStr).ToString();
-                bool isNumber = Regex.IsMatch(dic[mustArray[0].Trim()], "[0-9]+");
-                string value = isNumber ? dic[mustArray[0].Trim()] : string.Format("\'{0}\'", dic[mustArray[0].Trim()]);
-                string newMustStr = mustArray[0].ToString() + key + value;
-                mustStr = string.Format(@"\{0}", mustStr.Insert(mustStr.IndexOf(']'), @"\"));
-                sqlStr = Regex.Replace(sqlStr, mustStr,newMustStr, RegexOptions.IgnoreCase);
-            }
-            //4.去掉所有的{}
-            sqlStr = Regex.Replace(sqlStr,"({|})","", RegexOptions.IgnoreCase);
-            //5.(or 与 (and 替换成 （
+            // 去掉包含 {}的条件
+            sqlStr = Regex.Replace(sqlStr, @"(\{).+?(\})", "", RegexOptions.IgnoreCase);
+            //替换值
+            RelpaceValue(dic);
+            //去掉所有的[]
+            sqlStr = Regex.Replace(sqlStr,@"(\[|\])","", RegexOptions.IgnoreCase);
+            //(or 与 (and 替换成 （
             sqlStr = Regex.Replace(sqlStr, @"\(\s*(or|and)+", "(", RegexOptions.IgnoreCase);
-            //6. where or 与 where and 替换成 where 
-            sqlStr = Regex.Replace(sqlStr, @"(where)*(or|and)+", "where", RegexOptions.IgnoreCase);
-            //7. where)  替换成 where 
-            sqlStr = Regex.Replace(sqlStr, @"(where)*(or|and)+", "where", RegexOptions.IgnoreCase);
-            //8 最后为where替换为''
-            sqlStr = Regex.Replace(sqlStr, @"(where)*$", "", RegexOptions.IgnoreCase);
+            //where)  替换成 where 
+            sqlStr = Regex.Replace(sqlStr, @"where\s*\)", "where", RegexOptions.IgnoreCase);
+            // and 空 and与or 替换为 and
+            sqlStr = Regex.Replace(sqlStr, @"and\s*(and|or)+", "and", RegexOptions.IgnoreCase);
+            //where and|or () 替换为 where
+            sqlStr = Regex.Replace(sqlStr, @"(where)\s+(and|or)\s*\(\s*\)", "where", RegexOptions.IgnoreCase);
+            //or 空 and与or 替换为 or
+            sqlStr = Regex.Replace(sqlStr, @"or\s*(and|or)+", "or", RegexOptions.IgnoreCase);
+            // where or 与 where and 替换成 where 
+            sqlStr = Regex.Replace(sqlStr, @"(where)\s*(or|and)+", "where", RegexOptions.IgnoreCase);
+            // and与or()and与or替换为 '' 
+            sqlStr = Regex.Replace(sqlStr, @"(or|and)\s*\(\s*\)\s*(or|and)\s*$", "", RegexOptions.IgnoreCase);
+            // and()and与or替换为 and 
+            sqlStr = Regex.Replace(sqlStr, @"and\s*\(\s*\)\s*(and|or)", "and", RegexOptions.IgnoreCase);
+            // or与and与or替换为 or 
+            sqlStr = Regex.Replace(sqlStr, @"or\s*\(\s*\)\s*(and|or)", "or", RegexOptions.IgnoreCase);
+            // or)与and)与or替换为 or 
+            sqlStr = Regex.Replace(sqlStr, @"or\s*\(\s*\)\s*(and|or)", "or", RegexOptions.IgnoreCase);
+            //最后为 and 或 or替换为 ''
+            sqlStr = Regex.Replace(sqlStr, @"(and|or)*(\s|\(\s*\))*$", "", RegexOptions.IgnoreCase);
+            // 最后为where替换为''
+            sqlStr = Regex.Replace(sqlStr.Trim(), @"(where)*$", "", RegexOptions.IgnoreCase);
             return sqlStr;
+        }
+
+        /// <summary>
+        /// 替换值
+        /// </summary>
+        /// <param name="dic"></param>
+        private void RelpaceValue(Dictionary<string, string> dic)
+        {
+            foreach (var it in dic)
+            {
+                string conditionReg = @"(\[)" + it.Key + "(.+)@" + it.Key + @"(\])*";
+                string conditionStr=Regex.Match(sqlStr, conditionReg).Groups.ToString();
+                sqlStr = Regex.Replace(sqlStr, "@" + it.Key, it.Value);
+            }
         }
     }
 }

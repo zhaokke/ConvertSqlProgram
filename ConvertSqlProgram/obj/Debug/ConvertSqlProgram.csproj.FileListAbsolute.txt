@@ -4,3 +4,9 @@ D:\MyDemo\ConvertSql\ConvertSqlProgram\ConvertSqlProgram\bin\Debug\ConvertSqlPro
 D:\MyDemo\ConvertSql\ConvertSqlProgram\ConvertSqlProgram\obj\Debug\ConvertSqlProgram.csprojResolveAssemblyReference.cache
 D:\MyDemo\ConvertSql\ConvertSqlProgram\ConvertSqlProgram\obj\Debug\ConvertSqlProgram.exe
 D:\MyDemo\ConvertSql\ConvertSqlProgram\ConvertSqlProgram\obj\Debug\ConvertSqlProgram.pdb
+D:\myDemo\ConvertSqlProgram\ConvertSqlProgram\bin\Debug\ConvertSqlProgram.exe.config
+D:\myDemo\ConvertSqlProgram\ConvertSqlProgram\obj\Debug\ConvertSqlProgram.exe
+D:\myDemo\ConvertSqlProgram\ConvertSqlProgram\obj\Debug\ConvertSqlProgram.pdb
+D:\myDemo\ConvertSqlProgram\ConvertSqlProgram\bin\Debug\ConvertSqlProgram.exe
+D:\myDemo\ConvertSqlProgram\ConvertSqlProgram\bin\Debug\ConvertSqlProgram.pdb
+D:\myDemo\ConvertSqlProgram\ConvertSqlProgram\obj\Debug\ConvertSqlProgram.csprojResolveAssemblyReference.cache
